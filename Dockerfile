@@ -12,7 +12,7 @@ RUN curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | apt-k
 RUN dpkg --add-architecture armhf
 
 
-# build packages
+# Required to build packages
 RUN apt-get update && \
     apt-get -y -q upgrade && \
     apt-get -y -q install mercurial crossbuild-essential-armhf && \
@@ -22,4 +22,11 @@ RUN apt-get update && \
 RUN hg clone https://bitbucket.org/hirofuchi/xnbd
 
 
-# RUN cd xnbd/trunk && arm-linux-gnueabihf-gcc-4.9 -I /usr/include/glib-2.0/ xnbd_client.c
+# Include/Link deps
+RUN apt-get install -q -y libglib2.0-dev:armhf
+
+RUN find / -name 'libglib*'
+RUN cd xnbd/trunk && \
+    arm-linux-gnueabihf-gcc-4.9 -static \
+        -std=c99 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -I/usr/include/glib-2.0 -L/usr/lib/arm-linux-gnueabihf/ -lglib-2.0 -lpthread \
+        xnbd_client.c xnbd_common.c lib/*.c
