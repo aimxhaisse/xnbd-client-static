@@ -25,8 +25,10 @@ RUN hg clone https://bitbucket.org/hirofuchi/xnbd
 # Include/Link deps
 RUN apt-get install -q -y libglib2.0-dev:armhf
 
-RUN find / -name 'libglib*'
+
+# Let's build
 RUN cd xnbd/trunk && \
-    arm-linux-gnueabihf-gcc-4.9 -static \
-        -std=c99 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -I/usr/include/glib-2.0 -L/usr/lib/arm-linux-gnueabihf/ -lglib-2.0 -lpthread \
-        xnbd_client.c xnbd_common.c lib/*.c
+    arm-linux-gnueabihf-gcc-4.9 -c \
+        -std=c99 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -I/usr/include/glib-2.0 \
+        -static xnbd_client.c xnbd_common.c lib/*.c \
+    && arm-linux-gnueabihf-gcc-4.9 -static *.o -pthread /usr/lib/arm-linux-gnueabihf/libglib-2.0.a -o /xnbd-client-static
