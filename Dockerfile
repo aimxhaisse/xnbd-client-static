@@ -32,3 +32,7 @@ RUN cd xnbd/trunk && \
         -std=c99 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -I/usr/include/glib-2.0 \
         -static xnbd_client.c xnbd_common.c lib/*.c \
     && arm-linux-gnueabihf-gcc-4.9 -static *.o -pthread /usr/lib/arm-linux-gnueabihf/libglib-2.0.a -o /xnbd-client-static
+
+# Strip binary
+RUN cp /xnbd-client-static /xnbd-client-static-stripped \
+   && strip /xnbd-client-static-stripped
